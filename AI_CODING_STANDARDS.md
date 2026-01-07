@@ -18,7 +18,15 @@ We use [Biome](https://biomejs.dev/) for linting and formatting. All code must p
     - _Why_: Helps keep code clean and indicates intent (that the variable is intentionally unused).
     - _Example_: `catch (_err) { ... }` instead of `catch (err) { ... }`.
 
-3.  **Tailwind CSS**:
+3.  **Literal Keys**: Avoid using bracket notation (e.g., `obj["key"]`) when dot notation (`obj.key`) is possible.
+
+    - _Why_: Improves readability and consistency.
+
+4.  **Accessibility (A11y)**:
+
+    - Avoid `autoFocus` on inputs unless explicitly required for unique flows. It can disrupt screen readers.
+
+5.  **Tailwind CSS**:
     - Ensure `biome.json` is configured to handle Tailwind directives (e.g., `@apply`, `@theme`).
     - Do not use standard CSS syntax validation on files using Tailwind features if Biome is not configured for it.
 
