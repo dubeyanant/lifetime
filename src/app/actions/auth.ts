@@ -3,14 +3,18 @@
 import { redirect } from "next/navigation";
 import { createSession, deleteSession } from "@/lib/auth";
 import { API_BASE_URL } from "@/lib/constants";
+import { loginSchema, registerSchema } from "@/lib/schemas";
 
 export async function login(_prevState: unknown, formData: FormData) {
-  const username = formData.get("username");
-  const password = formData.get("password");
+  const result = loginSchema.safeParse(Object.fromEntries(formData));
 
-  if (!username || !password) {
-    return { error: "Please provide both username and password." };
+  if (!result.success) {
+    return {
+      error: result.error.issues[0].message,
+    };
   }
+
+  const { username, password } = result.data;
 
   try {
     const res = await fetch(`${API_BASE_URL}/users/login`, {
@@ -36,14 +40,15 @@ export async function login(_prevState: unknown, formData: FormData) {
 }
 
 export async function register(_prevState: unknown, formData: FormData) {
-  const username = formData.get("username");
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const display_name = formData.get("display_name");
+  const result = registerSchema.safeParse(Object.fromEntries(formData));
 
-  if (!username || !email || !password) {
-    return { error: "Please provide all required fields." };
+  if (!result.success) {
+    return {
+      error: result.error.issues[0].message,
+    };
   }
+
+  const { username, email, password, display_name } = result.data;
 
   try {
     const res = await fetch(`${API_BASE_URL}/users`, {
