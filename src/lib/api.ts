@@ -28,7 +28,9 @@ export async function linkFetch<T>(
 
   if (!res.ok) {
     if (res.status === 401 || res.status === 403) {
-      redirect("/login?error=SessionExpired");
+      // Redirect to the logout route handler giving it a chance to clear the session cookie
+      // This is necessary because we cannot clear cookies in a component (like standard linkFetch usage sites)
+      redirect("/api/logout?error=SessionExpired");
     }
     // For other unexpected errors, we also want to catch them if they are critical
     // The user asked for "if a session becomes invalid ... or something unexpected happens"

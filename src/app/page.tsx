@@ -17,7 +17,10 @@ export default async function Home({
   let events: LifeEvent[] = [];
   try {
     events = await linkFetch<LifeEvent[]>("/events/list");
-  } catch (err) {
+  } catch (err: unknown) {
+    if ((err as { digest?: string })?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw err;
+    }
     console.error("Failed to fetch events", err);
     // In a real app, handle error UI
   }

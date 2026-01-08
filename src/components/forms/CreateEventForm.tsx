@@ -2,21 +2,39 @@
 
 import { clsx } from "clsx";
 import { useActionState, useState } from "react";
-import { createEvent } from "@/app/actions/events";
+import { createEvent, updateEvent } from "@/app/actions/events";
+import type { LifeEvent } from "@/types";
+
+interface EventFormProps {
+  initialData?: LifeEvent;
+  eventId?: number;
+  onClose?: () => void;
+}
 
 export function CreateEventForm({
+  initialData,
+  eventId,
   onClose: _onClose,
-}: {
-  onClose?: () => void;
-}) {
-  const [state, action, isPending] = useActionState(createEvent, null);
-  const [importance, setImportance] = useState(1);
-  const [eventType, setEventType] = useState(0); // 0=Neutral, 1=Positive, -1=Negative
-  const [visibility, setVisibility] = useState(1); // 1=Public, 0=Private
+}: EventFormProps) {
+  const actionFn = eventId ? updateEvent.bind(null, eventId) : createEvent;
+  const [state, action, isPending] = useActionState(actionFn, null);
 
-  // If success, redirect (client-side navigation to clear params)
+  const [importance, setImportance] = useState(
+    initialData?.importance_score ?? 1,
+  );
+  const [eventType, setEventType] = useState(initialData?.event_type ?? 0); // 0=Neutral, 1=Positive, -1=Negative
+  const [visibility, setVisibility] = useState(initialData?.visibility ?? 1); // 1=Public, 0=Private
+
+  // If success, logic might need to differ. For create -> redirect home. For update -> maybe stay or redirect?
+  // The actions currently revalidate. We can rely on that.
+  // Although server component redirect is usually better, strictly client-side here we have:
   if (state?.success && typeof window !== "undefined") {
-    window.location.href = "/";
+    // If updating, we might want to stay on the detail page or go back.
+    // For now, let's just go home for consistency or reload if staying.
+    // If we are in a modal contexts, we might just want to close.
+    // Given the user request implies a dedicated detail screen, getting redirected to "/" might be annoying if just editing.
+    // But let's stick to the current pattern for now.
+    window.location.href = eventId ? `/events/${eventId}` : "/";
   }
 
   return (
@@ -28,6 +46,7 @@ export function CreateEventForm({
             type="text"
             name="title"
             required
+            defaultValue={initialData?.title}
             placeholder="Title of this memory..."
             className="w-full border-none bg-transparent p-0 text-3xl font-serif font-medium text-[#1F2933] placeholder:text-gray-300 focus:ring-0"
           />
@@ -40,6 +59,7 @@ export function CreateEventForm({
               type="date"
               name="date"
               required
+              defaultValue={initialData?.event_date} // YYYY-MM-DD matches input
               className="bg-transparent font-sans uppercase tracking-wider focus:outline-none"
             />
 
@@ -153,6 +173,7 @@ export function CreateEventForm({
           <textarea
             name="description"
             rows={5}
+            defaultValue={initialData?.description || ""}
             placeholder="Write about what happened..."
             className="w-full resize-none border-none bg-transparent p-0 text-lg font-serif text-[#1F2933] placeholder:text-gray-300 focus:ring-0 leading-relaxed"
           ></textarea>
@@ -165,7 +186,7 @@ export function CreateEventForm({
 
       {state?.success && (
         <p className="text-sm text-[#1F2933] font-sans">
-          Published to timeline.
+          {eventId ? "Changes saved." : "Published to timeline."}
         </p>
       )}
 
@@ -175,7 +196,11 @@ export function CreateEventForm({
           disabled={isPending || state?.success}
           className="rounded-full bg-[#1F2933] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-black disabled:opacity-50"
         >
-          {isPending ? "Saving..." : "Save to Lifetime"}
+          {isPending
+            ? "Saving..."
+            : eventId
+              ? "Save Changes"
+              : "Save to Lifetime"}
         </button>
       </div>
     </form>
