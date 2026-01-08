@@ -8,7 +8,9 @@ export async function createEvent(_prevState: unknown, formData: FormData) {
   const title = formData.get("title");
   const date = formData.get("date");
   const description = formData.get("description");
-  const importance = formData.get("importance"); // 0, 1, 2, 3
+  const importance = formData.get("importance"); // 0-4
+  const eventType = formData.get("eventType"); // 1, 0, -1
+  const visibility = formData.get("visibility"); // 1, 0
 
   if (!title || !date) {
     return { error: "Title and Date are required." };
@@ -29,8 +31,8 @@ export async function createEvent(_prevState: unknown, formData: FormData) {
         event_date: date,
         description: description || "",
         importance_score: Number(importance || 0),
-        visibility: 1, // Default private for now
-        event_type: 0, // Default generic
+        visibility: Number(visibility ?? 1),
+        event_type: Number(eventType || 0),
       }),
     });
 

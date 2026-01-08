@@ -1,11 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 import { login } from "@/app/actions/auth";
 
 export default function LoginPage() {
   const [state, action, isPending] = useActionState(login, undefined);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (error === "SessionExpired") {
+      toast.error("Session expired. Please log in again.");
+    } else if (error === "ApiError") {
+      toast.error("Something went wrong. Please try again.");
+    }
+  }, [searchParams]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FAFAF7] p-4 text-[#1F2933]">

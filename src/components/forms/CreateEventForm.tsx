@@ -11,6 +11,8 @@ export function CreateEventForm({
 }) {
   const [state, action, isPending] = useActionState(createEvent, null);
   const [importance, setImportance] = useState(1);
+  const [eventType, setEventType] = useState(0); // 0=Neutral, 1=Positive, -1=Negative
+  const [visibility, setVisibility] = useState(1); // 1=Public, 0=Private
 
   // If success, redirect (client-side navigation to clear params)
   if (state?.success && typeof window !== "undefined") {
@@ -31,46 +33,118 @@ export function CreateEventForm({
           />
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-[#6B7280]">
-          {/* Date Picker - Minimal */}
-          <input
-            type="date"
-            name="date"
-            required
-            className="bg-transparent font-sans uppercase tracking-wider focus:outline-none"
-          />
+        <div className="flex flex-col gap-4 text-sm text-[#6B7280]">
+          <div className="flex items-center gap-4">
+            {/* Date Picker - Minimal */}
+            <input
+              type="date"
+              name="date"
+              required
+              className="bg-transparent font-sans uppercase tracking-wider focus:outline-none"
+            />
 
-          <span className="h-4 w-px bg-gray-200" />
+            <span className="h-4 w-px bg-gray-200" />
 
-          {/* Importance Selector */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium uppercase tracking-wider">
-              Importance
-            </span>
-            <div className="flex gap-1">
-              {[0, 1, 2, 3].map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => setImportance(v)}
-                  className={clsx(
-                    "rounded-full transition-all duration-200",
-                    importance === v
-                      ? "bg-[#B45309]"
-                      : "bg-gray-200 hover:bg-gray-300",
-                    v === 0
-                      ? "h-2 w-2"
-                      : v === 1
-                        ? "h-3 w-3"
-                        : v === 2
-                          ? "h-4 w-4"
-                          : "h-5 w-5",
-                  )}
-                  title={`Importance: ${v}`}
-                />
-              ))}
+            {/* Importance Selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium uppercase tracking-wider">
+                Importance
+              </span>
+              <div className="flex gap-1">
+                {[0, 1, 2, 3, 4].map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setImportance(v)}
+                    className={clsx(
+                      "rounded-full transition-all duration-200",
+                      importance === v
+                        ? "bg-[#B45309]"
+                        : "bg-gray-200 hover:bg-gray-300",
+                      v === 0
+                        ? "h-2 w-2"
+                        : v === 1
+                          ? "h-2.5 w-2.5"
+                          : v === 2
+                            ? "h-3 w-3"
+                            : v === 3
+                              ? "h-4 w-4"
+                              : "h-5 w-5",
+                    )}
+                    title={`Importance: ${v}`}
+                  />
+                ))}
+              </div>
+              <input type="hidden" name="importance" value={importance} />
             </div>
-            <input type="hidden" name="importance" value={importance} />
+          </div>
+
+          <div className="flex items-center gap-4">
+            {/* Event Type Selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium uppercase tracking-wider">
+                Vibe
+              </span>
+              <div className="flex bg-gray-100 rounded-md p-0.5">
+                {[
+                  { val: 1, label: "+" },
+                  { val: 0, label: "o" },
+                  { val: -1, label: "-" },
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setEventType(opt.val)}
+                    className={clsx(
+                      "px-2 py-0.5 rounded text-xs font-medium transition-colors",
+                      eventType === opt.val
+                        ? "bg-white shadow-sm text-[#1F2933]"
+                        : "text-gray-400 hover:text-gray-600",
+                    )}
+                    title={
+                      opt.val === 1
+                        ? "Positive"
+                        : opt.val === -1
+                          ? "Negative"
+                          : "Neutral"
+                    }
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <input type="hidden" name="eventType" value={eventType} />
+            </div>
+
+            <span className="h-4 w-px bg-gray-200" />
+
+            {/* Visibility Selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium uppercase tracking-wider">
+                Visibility
+              </span>
+              <div className="flex bg-gray-100 rounded-md p-0.5">
+                {[
+                  { val: 1, label: "Public" },
+                  { val: 0, label: "Private" },
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setVisibility(opt.val)}
+                    className={clsx(
+                      "px-2 py-0.5 rounded text-xs font-medium transition-colors",
+                      visibility === opt.val
+                        ? "bg-white shadow-sm text-[#1F2933]"
+                        : "text-gray-400 hover:text-gray-600",
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <input type="hidden" name="visibility" value={visibility} />
+            </div>
           </div>
         </div>
 
