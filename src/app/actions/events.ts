@@ -103,15 +103,15 @@ export async function updateEvent(
   if (!token) return { error: "Not authenticated" };
 
   try {
-    const res = await fetch(`${API_BASE_URL}/events/${id}/update`, {
-      method: "POST",
+    const res = await fetch(`${API_BASE_URL}/events/${id}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         title,
-        event_date: date, // Optional in update? API says LifeEventUpdate, usually optional. But Form sends it.
+        event_date: date,
         description: description || "",
         importance_score: Number(importance || 0),
         visibility: Number(visibility ?? 1),

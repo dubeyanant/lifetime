@@ -45,6 +45,13 @@ export default async function Home({
             {isWriting ? "Close" : "Add Memory"}
           </Link>
 
+          <Link
+            href="/profile"
+            className="text-sm text-[#6B7280] hover:text-[#1F2933]"
+          >
+            Profile
+          </Link>
+
           <form action={logout}>
             <button
               type="submit"

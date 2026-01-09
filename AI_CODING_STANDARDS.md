@@ -26,11 +26,13 @@ We use [Biome](https://biomejs.dev/) for linting and formatting. All code must p
 
     - Avoid `autoFocus` on inputs unless explicitly required for unique flows. It can disrupt screen readers.
     - **Use Explicit Button Types**: Always specify `type="button"`, `type="submit"`, or `type="reset"` for `<button>` elements. Default behavior inside forms can lead to unexpected submissions.
+    - **SVGs**: Must have a `<title>` for accessibilty. If decorative, explicitly use `aria-hidden="true"`.
 
 5.  **Global Objects**:
 
     - **Number.isNaN**: Use `Number.isNaN(value)` instead of global `isNaN(value)`.
-    - _Why_: `isNaN` performs type coercion (e.g., `isNaN('string')` is true), whereas `Number.isNaN` checks strictly for `NaN`.
+    - **parseInt**: Always provide a radix (usually 10). Example: `Number.parseInt(val, 10)`.
+    - _Why_: `isNaN` performs type coercion (e.g., `isNaN('string')` is true), whereas `Number.isNaN` checks strictly for `NaN`. Specifying radix prevents unexpected behavior with leading zeros.
 
 6.  **Tailwind CSS**:
     - Ensure `biome.json` is configured to handle Tailwind directives (e.g., `@apply`, `@theme`).

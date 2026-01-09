@@ -3,6 +3,7 @@ export interface User {
   username: string;
   email: string;
   display_name: string | null;
+  account_visibility?: number;
   created_at: string;
 }
 
