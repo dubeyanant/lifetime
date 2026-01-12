@@ -111,6 +111,18 @@ export function EventDetail({ event }: EventDetailProps) {
           <span className="px-2 py-1 rounded bg-gray-100">
             {event.visibility === 1 ? "Public" : "Private"}
           </span>
+          {event.tags && event.tags.length > 0 && (
+            <div className="flex gap-2">
+              {event.tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="px-2 py-1 rounded bg-gray-100 text-[#1F2933]"
+                >
+                  #{tag.name}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

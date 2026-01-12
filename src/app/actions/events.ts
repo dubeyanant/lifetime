@@ -13,6 +13,15 @@ export async function createEvent(_prevState: unknown, formData: FormData) {
   const importance = formData.get("importance"); // 0-4
   const eventType = formData.get("eventType"); // 1, 0, -1
   const visibility = formData.get("visibility"); // 1, 0
+  const tagsRaw = formData.get("tags");
+  let tags: string[] = [];
+  if (tagsRaw && typeof tagsRaw === "string") {
+    try {
+      tags = JSON.parse(tagsRaw);
+    } catch (_e) {
+      // ignore
+    }
+  }
 
   if (!title || !date) {
     return { error: "Title and Date are required." };
@@ -35,6 +44,7 @@ export async function createEvent(_prevState: unknown, formData: FormData) {
         importance_score: Number(importance || 0),
         visibility: Number(visibility ?? 1),
         event_type: Number(eventType || 0),
+        tags,
       }),
     });
 
@@ -94,6 +104,15 @@ export async function updateEvent(
   const importance = formData.get("importance");
   const eventType = formData.get("eventType");
   const visibility = formData.get("visibility");
+  const tagsRaw = formData.get("tags");
+  let tags: string[] = [];
+  if (tagsRaw && typeof tagsRaw === "string") {
+    try {
+      tags = JSON.parse(tagsRaw);
+    } catch (_e) {
+      // ignore
+    }
+  }
 
   if (!title) {
     return { error: "Title is required." };
@@ -116,6 +135,7 @@ export async function updateEvent(
         importance_score: Number(importance || 0),
         visibility: Number(visibility ?? 1),
         event_type: Number(eventType || 0),
+        tags,
       }),
     });
 

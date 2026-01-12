@@ -1,8 +1,9 @@
 "use client";
 
 import { clsx } from "clsx";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { createEvent, updateEvent } from "@/app/actions/events";
+import { getUserTags } from "@/app/actions/tags";
 import type { LifeEvent } from "@/types";
 
 interface EventFormProps {
@@ -24,6 +25,57 @@ export function CreateEventForm({
   );
   const [eventType, setEventType] = useState(initialData?.event_type ?? 0); // 0=Neutral, 1=Positive, -1=Negative
   const [visibility, setVisibility] = useState(initialData?.visibility ?? 1); // 1=Public, 0=Private
+
+  // Tag State
+  const [tags, setTags] = useState<string[]>(
+    initialData?.tags?.map((t) => t.name) || [],
+  );
+  const [tagInput, setTagInput] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [allUserTags, setAllUserTags] = useState<string[]>([]);
+
+  // Fetch user tags on mount
+  useEffect(() => {
+    getUserTags().then((fetchedTags) => {
+      const names = fetchedTags.map((t) => t.name);
+      setAllUserTags(names);
+    });
+  }, []);
+
+  const handleTagInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setTagInput(val);
+    if (val.trim()) {
+      setSuggestions(
+        allUserTags.filter(
+          (t) =>
+            t.toLowerCase().includes(val.toLowerCase()) && !tags.includes(t),
+        ),
+      );
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const addTag = (tag: string) => {
+    const trimmed = tag.trim();
+    if (trimmed && !tags.includes(trimmed)) {
+      setTags([...tags, trimmed]);
+    }
+    setTagInput("");
+    setSuggestions([]);
+  };
+
+  const removeTag = (tag: string) => {
+    setTags(tags.filter((t) => t !== tag));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevent form submission
+      addTag(tagInput);
+    }
+  };
 
   // If success, logic might need to differ. For create -> redirect home. For update -> maybe stay or redirect?
   // The actions currently revalidate. We can rely on that.
@@ -177,6 +229,52 @@ export function CreateEventForm({
             placeholder="Write about what happened..."
             className="w-full resize-none border-none bg-transparent p-0 text-lg font-serif text-[#1F2933] placeholder:text-gray-300 focus:ring-0 leading-relaxed"
           ></textarea>
+        </div>
+
+        {/* Tags Section */}
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-[#1F2933]"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  className="text-gray-400 hover:text-red-600"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="relative">
+            <input
+              type="text"
+              value={tagInput}
+              onChange={handleTagInput}
+              onKeyDown={handleKeyDown}
+              placeholder="Add tags..."
+              className="w-full border-b border-gray-200 bg-transparent py-1 text-sm focus:border-[#B45309] focus:outline-none focus:ring-0"
+            />
+            {suggestions.length > 0 && (
+              <div className="absolute top-full z-10 mt-1 w-full rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    type="button"
+                    onClick={() => addTag(suggestion)}
+                    className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <input type="hidden" name="tags" value={JSON.stringify(tags)} />
         </div>
       </div>
 

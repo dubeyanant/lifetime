@@ -7,6 +7,11 @@ export interface User {
   created_at: string;
 }
 
+export interface TagResponse {
+  id: number;
+  name: string;
+}
+
 export interface LifeEvent {
   id: number;
   user_id: string;
@@ -18,6 +23,7 @@ export interface LifeEvent {
   event_date: string; // YYYY-MM-DD
   created_at: string;
   updated_at: string | null;
+  tags?: TagResponse[];
 }
 
 export type CreateEventDTO = {

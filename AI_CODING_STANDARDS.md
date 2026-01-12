@@ -25,7 +25,7 @@ We use [Biome](https://biomejs.dev/) for linting and formatting. All code must p
 4.  **Accessibility (A11y)**:
 
     - Avoid `autoFocus` on inputs unless explicitly required for unique flows. It can disrupt screen readers.
-    - **Use Explicit Button Types**: Always specify `type="button"`, `type="submit"`, or `type="reset"` for `<button>` elements. Default behavior inside forms can lead to unexpected submissions.
+    - **Use Explicit Button Types** (`lint/a11y/useButtonType`): Always specify `type="button"`, `type="submit"`, or `type="reset"` for `<button>` elements. Default behavior inside forms can lead to unexpected submissions.
     - **SVGs**: Must have a `<title>` for accessibilty. If decorative, explicitly use `aria-hidden="true"`.
 
 5.  **Global Objects**:
